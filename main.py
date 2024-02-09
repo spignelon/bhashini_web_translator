@@ -7,17 +7,17 @@ app = Flask(__name__)
 # API endpoint for translation
 translation_api_url = "http://127.0.0.1:8000/scaler/translate"
 
-def translate_text(text):
+def translate_text(text, source_language, target_language):
     payload = {
-        "source_language": 23,
+        "source_language": source_language,
         "content": text,
-        "target_language": 1
+        "target_language": target_language
     }
     response = requests.post(translation_api_url, json=payload)
     translated_content = response.json()["translated_content"]
     return translated_content
 
-def translate_html(html_content, base_url):
+def translate_html(html_content, base_url, source_language, target_language):
     soup = BeautifulSoup(html_content, 'html.parser')
 
     # Extract all text fields from the webpage
@@ -25,7 +25,7 @@ def translate_html(html_content, base_url):
 
     # Translate each text field
     for tag in text_fields:
-        translated_text = translate_text(tag.string)
+        translated_text = translate_text(tag.string, source_language, target_language)
         tag.replace_with(translated_text)
 
     # Update the links to stylesheets and other resources
@@ -36,8 +36,8 @@ def translate_html(html_content, base_url):
 
     return str(soup)
 
-@app.route('/translate_webpage/<path:url>')
-def translate_webpage(url):
+@app.route('/translate_webpage/<int:source_language>/<int:target_language>/<path:url>')
+def translate_webpage(source_language, target_language, url):
     try:
         # Fetch the HTML content of the webpage
         response = requests.get(url)
@@ -48,7 +48,7 @@ def translate_webpage(url):
         base_url = response.url
 
         # Translate the HTML content
-        translated_html = translate_html(html_content, base_url)
+        translated_html = translate_html(html_content, base_url, source_language, target_language)
 
         return render_template('translated_webpage.html', translated_html=translated_html)
 
