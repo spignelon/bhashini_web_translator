@@ -5,6 +5,19 @@ import sqlite3
 
 app = Flask(__name__)
 
+headers = {
+    "Sec-Fetch-User": "?1",
+    "Te": "trailers",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Mode": "navigate",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Site": "same-origin"
+}
+
 # API endpoint for translation
 translation_api_url = "http://127.0.0.1:8000/scaler/translate"
 
@@ -104,7 +117,7 @@ def translate_webpage(source_language, target_language, url):
             return render_template('translated_webpage.html', translated_html=cached_translation)
 
         # If not cached, fetch the HTML content of the webpage
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         html_content = response.text
 
