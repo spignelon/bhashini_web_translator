@@ -1,6 +1,32 @@
 from flask import Flask, render_template
 from bs4 import BeautifulSoup
 import requests
+# import sqlite3
+
+# if not os.path.isfile("cache.db"):
+#     exists = False
+# else:
+#     exists = True
+
+# conn = sqlite3.connect("cache.db")
+# c = conn.cursor()
+
+# if exists == False:
+#     c.execute('''CREATE TABLE cache(website TEXT, cache TEXT)''')
+    
+headers = {
+    "Sec-Fetch-User": "?1",
+    "Te": "trailers",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Mode": "navigate",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Site": "same-origin"
+}
+
 
 app = Flask(__name__)
 
@@ -40,7 +66,7 @@ def translate_html(html_content, base_url, source_language, target_language):
 def translate_webpage(source_language, target_language, url):
     try:
         # Fetch the HTML content of the webpage
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         html_content = response.text
 
